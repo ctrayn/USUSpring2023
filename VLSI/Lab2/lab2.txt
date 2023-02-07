@@ -1,0 +1,17 @@
+Calvin Passmore
+
+ECE 6470
+
+Lab 2
+
+1. What was the longest delay in the circuit, in other words, the data arrival time?
+
+-0.51
+
+2. How many total cells were used from the standard cell library to synthesize the circuit?
+
+5583
+
+3. What is the total leakage power consumed by the circuit?
+
+7.1206e+07 pW

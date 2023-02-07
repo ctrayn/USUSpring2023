@@ -1,0 +1,32 @@
+ 
+****************************************
+Report : area
+Design : s35932_bench
+Version: T-2022.03-SP2
+Date   : Tue Feb  7 12:42:40 2023
+****************************************
+
+Information: Updating design information... (UID-85)
+Warning: Design 's35932_bench' contains 1 high-fanout nets. A fanout number of 1000 will be used for delay calculations involving these nets. (TIM-134)
+Library(s) Used:
+
+    fsd0a_a_generic_core_tt1v25c (File: /opt/cadence_roy/library/fsd0a_90nm_generic_core/timing/fsd0a_a_generic_core_tt1v25c.db)
+
+Number of ports:                           69
+Number of nets:                          5620
+Number of cells:                         5583
+Number of combinational cells:           3855
+Number of sequential cells:              1728
+Number of macros/black boxes:               0
+Number of buf/inv:                       1027
+Number of references:                      27
+
+Combinational area:              20498.463881
+Buf/Inv area:                     2624.831982
+Noncombinational area:           24417.680781
+Macro/Black Box area:                0.000000
+Net Interconnect area:      undefined  (Wire load has zero net area)
+
+Total cell area:                 44916.144662
+Total area:                 undefined
+1

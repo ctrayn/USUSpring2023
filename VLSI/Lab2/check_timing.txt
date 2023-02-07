@@ -1,0 +1,56 @@
+Information: Updating design information... (UID-85)
+Warning: Design 's35932_bench' contains 5 high-fanout nets. A fanout number of 1000 will be used for delay calculations involving these nets. (TIM-134)
+
+Information: Checking generated_clocks...
+
+Information: Checking loops...
+
+Information: Checking no_input_delay...
+
+Information: Checking unconstrained_endpoints...
+
+Information: Checking pulse_clock_cell_type...
+
+Information: Checking no_driving_cell...
+
+Information: Checking partial_input_delay...
+Warning: there are 37 input ports that only have partial input delay specified. (TIM-212)
+--------------------
+blif_clk_net
+blif_reset_net
+DATA_0_31
+DATA_0_30
+DATA_0_29
+DATA_0_28
+DATA_0_27
+DATA_0_26
+DATA_0_25
+DATA_0_24
+DATA_0_23
+DATA_0_22
+DATA_0_21
+DATA_0_20
+DATA_0_19
+DATA_0_18
+DATA_0_17
+DATA_0_16
+DATA_0_15
+DATA_0_14
+DATA_0_13
+DATA_0_12
+DATA_0_11
+DATA_0_10
+DATA_0_9
+DATA_0_8
+DATA_0_7
+DATA_0_6
+DATA_0_5
+DATA_0_4
+DATA_0_3
+DATA_0_2
+DATA_0_1
+DATA_0_0
+RESET
+TM1
+TM0
+1
