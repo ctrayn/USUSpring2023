@@ -39,7 +39,7 @@ plt.figure(4); plt.clf()
 plt.plot(x[:(2*Lp+1) + N*20])
 for i in range(20):
     plt.plot(np.array([2*Lp + i*N,2*Lp + i*N]),np.array([-2,2]),color='gray',linewidth=0.25)
-# plt.show()
+# plt.savefig("TEST?")
 print('bits=',bits[:10])
 # first peak at 2*Lp, then every N samples after that
 offset = (2*Lp - np.floor(N/2)).astype(int)
@@ -51,6 +51,6 @@ Nsymtoss = 2*np.ceil(Lp/N) # throw away symbols at the end
 nc = (np.floor((len(x) - offset - Nsymtoss*N)/N)).astype(int) # number of points of signal to plot
 xreshape = x[offset:offset + nc*N].reshape(nc,N)
 plt.figure(5); plt.clf()
-plt.plot(np.arange(-np.floor(N/2), np.floor(N/2)+1), xreshape.T,color='b',
-linewidth=0.25)
-plt.show()
+plt.plot(np.arange(-np.floor(N/2), np.floor(N/2)+1), xreshape.T,color='b', linewidth=0.25)
+plt.savefig("TEST?")
+# plt.show()

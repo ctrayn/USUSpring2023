@@ -34,15 +34,15 @@ def upsample(pulses, num_up):
     sig[range(0,len(pulses)*num_up,num_up)] = np.array(pulses).reshape(len(pulses),1)
     return sig[:,0]
 
-def IQ_to_sig(I, Q, pulse_shape:list, freq):
+def IQ_to_sig(I, Q, pulse:list, freq):
     I_upsampled = upsample(I)
     Q_upsampled = upsample(Q)
 
     plot_and_show(I_upsampled, title="I upsampled")
     plot_and_show(Q_upsampled, title="Q_upsampled")
 
-    I_shaped = np.convolve(I_upsampled, pulse_shape)
-    Q_shaped = np.convolve(Q_upsampled, pulse_shape)
+    I_shaped = np.convolve(I_upsampled, pulse)
+    Q_shaped = np.convolve(Q_upsampled, pulse)
 
     plot_and_show(I_shaped, title="I shaped")
     plot_and_show(Q_shaped, title="Q_shaped")
