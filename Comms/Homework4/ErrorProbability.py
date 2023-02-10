@@ -1,8 +1,9 @@
 from math import sqrt
 import numpy as np
 from numpy.random import rand
+import matplotlib.pyplot as plt
 
-ERR_COUNT_TARGET = 100
+ERR_COUNT_TARGET = 1e5
 # Group of LUTs
 Eb = 1
 
@@ -40,17 +41,24 @@ class SignalSpace:
     def slice(self, symbol):
         """Turns a single symbol into the closest bits"""
         print("NO GOOD! WASN'T OVERWRITTEN")
+    
+    def set_LUT():
+        """Adjusts the LUT for the given amplitudes"""
+        print("NO GOOD! WASN'T OVERRITTEN")
 
 class FourPAM(SignalSpace):
-    def __init__(self, st) -> None:
+    def __init__(self) -> None:
         super().__init__()
         self.set_symbol_energy()
-        self.LUT = [-3*self.A, -1*self.A, 1*self.A, 3*self.A]
         self.bits_per_symbol = 2
 
     def set_symbol_energy(self):
         self.Es = 2 * Eb
         self.A = sqrt(self.Es / 5)
+        self.set_LUT()
+
+    def set_LUT(self):
+        self.LUT = [-3*self.A, -1*self.A, 1*self.A, 3*self.A]
 
     def serial_to_parallel(self, bits: list):
         parallel = []
@@ -59,11 +67,13 @@ class FourPAM(SignalSpace):
         return parallel
 
     def bits_to_sym(self, bits: list):
-        return [self.LUT[val] for val in bits]
+        assert len(bits) == 2, f"FourPam bit length not 2, received {len(bits)} bits"
+        val = bits[0] << 1 | bits[1]
+        return self.LUT[val]
 
     def simulate_single_symbol(self, std_dev, bits):
         sym = self.bits_to_sym(bits)
-        sym += super().random_noise(std_dev)
+        sym += self.random_noise(std_dev)
         bits_hat = self.slice(sym)
         bit_errs = 0
         for idx in range(len(bits_hat)):
@@ -87,18 +97,22 @@ class BPSK(SignalSpace):
     def __init__(self) -> None:
         super().__init__()
         self.set_symbol_energy()
-        self.LUT = [-1*self.A, 1*self.A]
         self.bits_per_symbol = 1
+
+    def set_LUT(self):
+        self.LUT = [-1*self.A, 1*self.A]
 
     def set_symbol_energy(self):
         self.Es = Eb
         self.A = sqrt(self.Es)
+        self.set_LUT()
 
     def serial_to_parallel(self, bits: list):
         return bits
 
     def bits_to_sym(self, bits: list):
-        return [self.LUT[bit] for bit in bits]
+        assert len(bits) == 1, f"BPSK can only take len 1 bits at a time, received len {len(bits)}"
+        return self.LUT[bits[0]]
 
     def get_one_symbol(self, bits: list):
         return bits[1:], bits[:1]
@@ -121,14 +135,27 @@ class BPSK(SignalSpace):
             sym_err = 1
         return bit_err, sym_err
 
-signal_space = BPSK() # TODO: For loop
-num_bits = 1e8 # number of bits
-bits = (rand(num_bits*(signal_space.bits_per_sym))> 0.5).astype(int) # generate random bits {0,1}
-for SNRdB in range(1,20+1):
-    SNR = 10**(SNRdB/10)
-    N0 = SNR/Eb
-    sigma = sqrt(N0/1)
-    bit_err_count = 0
-    sym_err_count = 0
-    while bit_err_count < ERR_COUNT_TARGET:
-        bit_err, sym_err = signal_space.simulate_single_symbol()
+for signal_space in [BPSK(), FourPAM()]:
+    bit_errs = []
+    for SNRdB in range(0,20+1):
+        SNR = 10**(SNRdB/10)
+        N0 = SNR/Eb
+        sigma = sqrt(N0/1)
+        bit_err_count = 0
+        sym_err_count = 0
+        sym_count = 0
+        while bit_err_count < ERR_COUNT_TARGET:
+            bits = (rand(signal_space.bits_per_symbol)>0.5).astype(int)
+            bit_err, sym_err = signal_space.simulate_single_symbol(sigma, bits)
+            bit_err_count += bit_err
+            sym_err_count += sym_err
+            sym_count += 1
+        bit_errs.append(bit_err/(sym_count * signal_space.bits_per_symbol))
+        print(sym_count)
+    plt.plot(list(range(0, 20+1)), bit_errs)
+plt.grid(which='both', axis='both')
+plt.yscale('log')
+plt.xlabel("Eb/No [dB]")
+plt.xlim(0, 20)
+plt.ylabel("Pb")
+plt.show()
