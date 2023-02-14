@@ -88,7 +88,7 @@ class SignalSpace:
                 sym_count += 1
                 if bit_err_count > 1 and (bit_err_count/(sym_count * self.bits_per_symbol)) < ErrStopLimit:
                     break
-                print(f"{self.name:5} SNRdB [\033[32m{'='*int(SNRdB)}\033[0m{' '*(dBRangeEnd-SNRdB)}] [\033[32m{'='*int((bit_err_count/ErrCountTarget)*100)}\033[0m{' '*int(((ErrCountTarget - bit_err_count)/ErrCountTarget)*100)}] {bit_err_count/(sym_count * self.bits_per_symbol)}{' '*10}", end='\r')
+                print(f"\033[K{self.name:5} SNRdB [{SNRdB}/{dBRangeEnd}] Error Count [{bit_err_count}/{ErrCountTarget}] {bit_err_count/(sym_count * self.bits_per_symbol)}", end='\r')
             self.bit_errs.append(bit_err_count/(sym_count * self.bits_per_symbol))
             self.sym_errs.append(sym_err_count/sym_count)
             # print(f"\n{self.bit_errs[-1]}")
@@ -128,11 +128,10 @@ class BPSK(SignalSpace):
         return copy.deepcopy(self.LUT[bits[0]])
 
     def slice(self, symbol):
-        distances = []
-        for look in self.LUT:
-            distances.append(abs(symbol[0] - look[0]))
-        sym_hat = distances.index(min(distances))
-        return [int(sym_hat)]
+        if symbol[0] >= 0:
+            return [1]
+        else:
+            return [0]
 
 class QPSK(SignalSpace):
     def __init__(self, Eb=1) -> None:
@@ -147,7 +146,7 @@ class QPSK(SignalSpace):
         self.LUT = [[self.A, self.A], [self.A, -self.A], [-self.A, self.A], [-self.A, -self.A]]
 
     def set_symbol_energy(self):
-        self.Es = 2 * self.Eb
+        self.Es = self.Eb *1.25
         self.A = self.Es / sqrt(2)
         self.set_LUT()
 
@@ -158,11 +157,18 @@ class QPSK(SignalSpace):
 
     def slice(self, symbol):
         assert len(symbol) == self.bits_per_symbol
-        distances = []
-        for look in self.LUT:
-            distances.append(sqrt((symbol[0] - look[0])**2 + (symbol[1] - look[1])**2))
-        sym_hat = distances.index(min(distances))
-        return [(sym_hat >> 1) & 1, sym_hat & 1] # Turn an integer into two bits
+        bits = []
+        if symbol[0] >= 0:
+            bits.append(0)
+        else:
+            bits.append(1)
+        
+        if symbol[1] >= 0:
+            bits.append(0)
+        else:
+            bits.append(1)
+
+        return bits
 
 class EightPSK(SignalSpace):
     def __init__(self, Eb=1) -> None:
@@ -224,8 +230,8 @@ class CCITT(SignalSpace):
         sym_hat = distances.index(min(distances))
         return [(sym_hat >> 2) & 1, (sym_hat >> 1) & 1, sym_hat & 1]
 
-signal_spaces = [QPSK()]
-# signal_spaces = [BPSK(), QPSK(), EightPSK(), CCITT()]
+# signal_spaces = [QPSK()]
+signal_spaces = [BPSK(), QPSK(), EightPSK(), CCITT()]
 
 for signal_space in signal_spaces:
     signal_space.simulate(dBRangeStart=0, dBRangeEnd=15, ErrCountTarget=1e2, ErrStopLimit=1e-6)
