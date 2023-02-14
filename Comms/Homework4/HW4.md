@@ -1,3 +1,44 @@
+Calvin Passmore
+
+ECE 5660
+
+# Homework 4
+
+## Problem 3
+
+(a)
+
+See the attached code. For each constellation type, the LUT, symbol energy, parallel to serial, and slicing had to be done individually. The algorithm to simulate the bits was put into a parent class so that each child class could use the features and data points directly.
+
+(b)
+
+![](./BPSK.png)
+
+This is comparable to Figure 6.1.3 in the book. The image in the book seems to be more smooth, indicating they likely used more points to plot it, the points lie in the same general area.
+
+The symbol errors are exactly the same as the bit errors, so only one plot is visible on the graph even though both are plotted. This is due to the one-to-one mapping of symbols to bits in BPSK.
+
+(c)
+
+![](./QPSK.png)
+
+These plots seem to drop off faster than the ones in the book, going under 10e-6 probability of error at Eb/N0 = 4, there is randomness in the generation of the plots.
+
+(d)
+
+![](./8PSK.png)
+
+The plots are essentially the same as the ones in the book. There is slight variation due to the randomness of the simulation and the fact the book seems to use more plot points, providing a more smooth and more accurate curve.
+
+(f)
+
+![](./CCITT.png)
+
+This plot is essentially the same as the book. There is a slight variation due to the randomness of the simulation.
+
+## Code
+
+```py
 from math import sqrt, cos, sin, floor, ceil
 import numpy as np
 from numpy.random import rand
@@ -31,10 +72,15 @@ class SignalSpace:
 
     def simulate_single_symbol(self, std_dev, bits):
         """std_dev is the calculated standard deviation and bits is one symbol worth of bits, returns number of bit errors and symbol errors"""
+        # print(f"Simulating single symbol {self.bits_per_symbol}")
         assert len(bits) == self.bits_per_symbol
         sym = self.bits_to_amp(bits)
-        sym = [amp + self.random_noise(std_dev) for amp in sym] # Add noise
+        # print(f"Amplitude {sym}")
+        for idx in range(self.num_axis):
+            sym[idx] += self.random_noise(std_dev)
+        # print(f"Noise added {sym}")
         bits_hat = self.slice(sym)
+        # print([bits_hat, bits])
         bit_err = 0
         sym_err = 0
         for idx in range(len(bits)):
@@ -60,7 +106,7 @@ class SignalSpace:
         plt.grid(which='both', axis='both')
         plt.yscale('log')
         plt.xlabel("Eb/No [dB]")
-        plt.xlim(0, 15)
+        plt.xlim(0, 10)
         plt.ylabel("Pb")
         plt.ylim(1e-6, 0)
         plt.title(f"Probability of error for {self.name}")
@@ -148,7 +194,7 @@ class QPSK(SignalSpace):
 
     def set_symbol_energy(self):
         self.Es = 2 * self.Eb
-        self.A = self.Es / sqrt(2)
+        self.A = sqrt(self.Es)
         self.set_LUT()
 
     def bits_to_amp(self, bits: list):
@@ -224,8 +270,7 @@ class CCITT(SignalSpace):
         sym_hat = distances.index(min(distances))
         return [(sym_hat >> 2) & 1, (sym_hat >> 1) & 1, sym_hat & 1]
 
-signal_spaces = [QPSK()]
-# signal_spaces = [BPSK(), QPSK(), EightPSK(), CCITT()]
+signal_spaces = [BPSK(), QPSK(), EightPSK(), CCITT()]
 
 for signal_space in signal_spaces:
     signal_space.simulate(dBRangeStart=0, dBRangeEnd=15, ErrCountTarget=1e2, ErrStopLimit=1e-6)
@@ -244,3 +289,4 @@ plt.ylim(1e-6, 0)
 plt.title("Probability of Error")
 plt.legend([space.name for space in signal_spaces])
 plt.savefig('joined.png')
+```
