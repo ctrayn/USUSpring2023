@@ -32,7 +32,7 @@ Binary FSK is where the two bits correspond to a change in frequency delta_F suc
 
 s(t) = A cos[2 &pi; (F<sub>c</sub> &plusmn; &Delta;<sub>F</sub>)t]
 
-(b) The minimum frequency separation = 1 / (4 * T<sub>b</sub>) = R<sub>b</sub> / 4. This is because the condition for orthogonality in continuous time is the integral of the two signals must be 0 over the period. Solving the integral gives sin(2 &pi; (F<sub>1</sub>-F<sub>0</sub>)T<sub>b</sub>) = 0. sin(x) = 0 when x = k&pi; so 2 &pi; (F<sub>1</sub>-F<sub>0</sub>)T<sub>b</sub> = k &pi;. We only need one point of the pi circle so choose k=1. Solving the remaining equation gives F<sub>1</sub>-F<sub>0</sub> = 1 / (2 * T<sub>b</sub>).
+(b) The minimum frequency separation = 1 / (4 * T<sub>b</sub>) = R<sub>b</sub> / 4. This is because the condition for orthogonality in continuous time is the integral of the two signals must be 0 over the period. Solving the integral gives sin(2 &pi; (F<sub>i</sub>-F<sub>j</sub>)T<sub>b</sub>) = 0. sin(x) = 0 when x = k&pi; so 2 &pi; (F<sub>i</sub>-F<sub>j</sub>)T<sub>b</sub> = k &pi;. We only need one point of the pi circle so choose k=1. Solving the remaining equation gives F<sub>i</sub>-F<sub>j</sub> = 1 / (2 * T<sub>b</sub>).
 
 Then &Delta;<sub>F</sub> = (F<sub>1</sub>-F<sub>0</sub>) / 2 = 1 / (4 * T<sub>b</sub>) = R<sub>b</sub> / 4
 
@@ -58,9 +58,61 @@ This is non-causal, by reaching into the next symbol. To write it causally, shif
 
 &Theta;<sub>n</sub> = &Theta;<sub>n-1</sub> + a<sub>n-1</sub>&pi;/2
 
-(f) //TODO
+(f)
 
-(g) //TODO
+s(t) = cos[2&pi; F<sub>c</sub>t + 2&pi; a<sub>n</sub>R<sub>b</sub>/4 (t - nT<sub>b</sub>) + &Theta;<sub>n</sub>]
+
+= cos[2&pi; F<sub>c</sub>t + 2&pi; a<sub>n</sub>R<sub>b</sub>/4 t - na<sub>n</sub>&pi;/2 + &theta;<sub>n</sub>] where na<sub>n</sub>&pi;/2 + &theta;<sub>n</sub> = &Theta;<sub>n</sub>
+
+&Theta;<sub>n</sub> = &theta;<sub>n</sub> - na<sub>n</sub>&pi;/2
+
+= &theta;<sub>n-1</sub> + a<sub>n-1</sub>&pi;/2 - na<sub>n</sub>&pi;/2
+
+= &theta;<sub>n-1</sub> - a<sub>n-1</sub>(1-n+n)&pi;/2 - na<sub>n</sub>&pi;/2
+
+= &theta;<sub>n-1</sub>-(n-1)a<sub>n-1</sub>&pi;/2+n&pi;/2(a<sub>n-1</sub>-a<sub>n</sub>)
+
+= &theta;<sub>n-1</sub> + n &pi;/2 (a<sub>n-1</sub>-a<sub>n</sub>)
+
+so when a<sub>n</sub> &ne; a<sub>n-1</sub> and when <i>n</i> is odd, then &Theta;<sub>n</sub> = &Theta;<sub>n-1</sub> &pm; &pi;, and &Theta;<sub>n-1</sub> otherwise
+
+So now
+
+s(t) = cos[2&pi; F<sub>c</sub>t + 2&pi; a<sub>n</sub>R<sub>b</sub>/4 (t - nT<sub>b</sub>) + &Theta;<sub>n</sub>]
+
+= cos(2&pi;F<sub>c</sub>t)cos(2&pi; a<sub>n</sub>R<sub>b</sub>/4t + &Theta;<sub>n</sub>) - sin(2&pi;F<sub>c</sub>t)sin(2&pi; a<sub>n</sub>R<sub>b</sub>/4t + &Theta;<sub>n</sub>)
+
+cos(2&pi; a<sub>n</sub>R<sub>b</sub>/4t + &Theta;<sub>n</sub>)
+
+= cos(2&pi; a<sub>n</sub>R<sub>b</sub>/4t)cos&Theta;<sub>n</sub> - sin(2&pi; a<sub>n</sub>R<sub>b</sub>/4t)sin&Theta;<sub>n</sub>
+
+= cos(2&pi; a<sub>n</sub>R<sub>b</sub>/4t)cos&Theta;<sub>n</sub>
+
+= d <sub>I, n</sub>cos2&pi;R<sub>b</sub>t/4 where d <sub>I, n</sub> = cos&Theta;<sub>n</sub>
+
+similarly 
+
+sin(2&pi; a<sub>n</sub>R<sub>b</sub>/4t + &Theta;<sub>n</sub>)
+
+= sin(2&pi; a<sub>n</sub>R<sub>b</sub>t/4)cos&Theta;<sub>n</sub> + cos(2&pi; a<sub>n</sub>R<sub>b</sub>t/4)sin&Theta;<sub>n</sub>
+
+= sin(2&pi; a<sub>n</sub>R<sub>b</sub>t/4)cos&Theta;<sub>n</sub>
+
+= cos&Theta;<sub>n</sub> &dot; a<sub>n</sub>sin2&pi;R<sub>b</sub>t/4
+
+= -d<sub>Q, n</sub>sin2&pi;R<sub>b</sub>t/4 where -d<sub>Q, n</sub> = -a<sub>b</sub>cos&Theta;<sub>n</sub> = -a<sub>n</sub>d <sub>I, n</sub>
+
+plugging both d's into s(t) gives
+
+s(t) = d<sub>I, n</sub>cos(2&pi; a<sub>n</sub>R<sub>b</sub>t/4) cos(2&pi;F<sub>c</sub>t) + d<sub>Q, n</sub>sin(2&pi; a<sub>n</sub>R<sub>b</sub>t/4) sin(2&pi;F<sub>c</sub>t)
+
+using sin &alpha; = cos(&alpha; - &pi;/2)
+
+s(t) = d<sub>I, n</sub>cos(2&pi; a<sub>n</sub>R<sub>b</sub>t/4) cos(2&pi;F<sub>c</sub>t) + d<sub>Q, n</sub>cos(2&pi; a<sub>n</sub>R<sub>b</sub>t/4 - &pi;/2) sin(2&pi;F<sub>c</sub>t)
+
+= d<sub>I, n</sub>cos(2&pi; a<sub>n</sub>R<sub>b</sub>t/4) cos(2&pi;F<sub>c</sub>t) + d<sub>Q, n</sub>cos2&pi; a<sub>n</sub>R<sub>b</sub>t/4(t-T<sub>b</sub>)sin(2&pi;F<sub>c</sub>t)
+
+(g) In reality MSK in a nonlinear modulation scheme for a<sub>n</sub>. It is only from the viewpoint of d<sub>n</sub> that MSK can be seen as linear modulation, seeing it as OQPSK.
 
 ---
 ---
@@ -85,7 +137,7 @@ See the attached code. For each constellation type, the LUT, symbol energy, para
 
 (b)
 
-![](./BPSK.png)
+<img src="./BPSK.png" width="60%">
 
 This is comparable to Figure 6.1.3 in the book. The image in the book seems to be more smooth, indicating they likely used more points to plot it, the points lie in the same general area.
 
@@ -93,25 +145,26 @@ The symbol errors are exactly the same as the bit errors, so only one plot is vi
 
 (c)
 
-![](./QPSK.png)
+<img src="./QPSK.png" width="60%">
+
 
 These plots are comparable to the ones in the book, there is a slight variation from what is in the book, and with low Eb/N0 it isn't a very smooth graph.
 
 (d)
 
-![](./8PSK.png)
+<img src="./8PSK.png" width="60%">
 
 The plots are essentially the same as the ones in the book. There is slight variation due to the randomness of the simulation and the fact the book seems to use more plot points, providing a more smooth and more accurate curve.
 
 (f)
 
-![](./CCITT.png)
+<img src="./CCITT.png" width="60%">
 
 This plot is essentially the same as the book. There is a slight variation due to the randomness of the simulation.
 
 Just for fun, I plotted all of the bit errors together as well. (For some reason the 'savefigure' function in this case cropped it funny)
 
-![](./joined.png)
+<img src="./joined.png" width="60%">
 
 ## Code
 
