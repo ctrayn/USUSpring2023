@@ -4,10 +4,9 @@
 #include <stdio.h>
 #include "defs.h"
 
-#define ASSEMBLY_LEN 16
 instruction_t fib_assembly[ASSEMBLY_LEN] = {
     {.opcode = NOOP, .dest = NULL_REG, .src1 = NULL_REG, .src2 = NULL_REG },
-    {.opcode = LDNM, .dest = REG_0,    .src1 = NULL_REG, .src2 = 0xF},  // Start a count down counter
+    {.opcode = LOAD, .dest = REG_0,    .src1 = NULL_REG, .src2 = 0x0},  // Read from memory the Fib number to calculate (+1)
     {.opcode = LDNM, .dest = REG_A,    .src1 = NULL_REG, .src2 = 0x1},  // Load a 1 into a register
     {.opcode = LDNM, .dest = REG_B,    .src1 = NULL_REG, .src2 = 0x0},  // Load a 0 into a register
     {.opcode = LDNM, .dest = REG_1,    .src1 = NULL_REG, .src2 = 0x0},  // Load the first two Fibonacci numbers
@@ -21,13 +20,29 @@ instruction_t fib_assembly[ASSEMBLY_LEN] = {
     
     {.opcode = JMP0, .dest = 0x6,      .src1 = NULL_REG, .src2 = REG_0},    // If the Reg 0 is not 0, jump to the beginning of the loop
     //Loop End
-    {.opcode = ADD,  .dest = REG_R,    .src1 = REG_B,    .src2 = REG_3},    // Load the Fib value into the return register
+    {.opcode = STR,  .dest = 0x1,      .src1 = NULL_REG, .src2 = REG_3},    // Load the Fib value into the return register
+    //FIbonacci end
+
+    //Use other opcodes
+    {.opcode = LOAD, .dest = REG_0,    .src1 = NULL_REG, .src2 = 0x2},  //Load the first number
+    {.opcode = LOAD, .dest = REG_1,    .src1 = NULL_REG, .src2 = 0x3},  //Load the second number
+    {.opcode = AND,  .dest = REG_2,    .src1 = REG_1,    .src2 = REG_0}, //And the numbers
+    {.opcode = PUSH, .dest = NULL_REG, .src1 = NULL_REG, .src2 = REG_2}, //Put the And on the stack
+    {.opcode = XOR,  .dest = REG_2,    .src1 = REG_1,    .src2 = REG_0}, //XOR The two numbers
+    {.opcode = PUSH, .dest = NULL_REG, .src1 = NULL_REG, .src2 = REG_2}, //Pusht the XOR value
+    {.opcode = POP,  .dest = REG_0,    .src1 = NULL_REG, .src2 = NULL_REG}, //Get the xor value from the stack
+    {.opcode = STR,  .dest = 0x4,      .src1 = NULL_REG, .src2 = REG_0}, //Put the XOR in the memory
+    {.opcode = POP,  .dest = REG_0,    .src1 = NULL_REG, .src2 = NULL_REG}, // Get the AND value
+    {.opcode = STR,  .dest = 0x5,      .src1 = NULL_REG, .src2 = REG_0},    //Store the and value in memory
+    {.opcode = JMP,  .dest = 24,       .src1 = NULL_REG, .src2 = NULL_REG}, // JUMP Across the next store
+    {.opcode = STR,  .dest = 0x6,      .src1 = NULL_REG, .src2 = REG_3}, //This should be skipped, if it isn't memory 6 will be the fib number
 };
-
-#define STACK_LEN 32
-#define NUM_REG 12
-#define MEM_LEN 64
-
+uint32_t fib_memory[MEM_LEN] = {
+    0xF,    // Fib number to calculate (+1)
+    0x0,    // Fib answer
+    0x3,    // Checking other opcodes
+    0xF,
+};
 
 #define print_info print_register_info(curr_addr, curr_instr, return_reg, ALU_1, ALU_2, ALU_OUT, registers)
 void print_register_info(uint32_t curr_addr, instruction_t curr_instr, uint32_t return_reg, uint32_t ALU_1, uint32_t ALU_2, uint32_t ALU_OUT, uint32_t registers[]) {
@@ -48,7 +63,8 @@ void print_register_info(uint32_t curr_addr, instruction_t curr_instr, uint32_t 
 }
 
 void main() {
-    uint32_t memory[MEM_LEN] = {};
+    uint32_t *memory = fib_memory;
+    instruction_t *assembly = fib_assembly;
     uint32_t stack[STACK_LEN] = {};
     uint32_t stack_index = 0;
     uint32_t registers[NUM_REG] = {};
@@ -61,7 +77,7 @@ void main() {
 
     while (true) {
         // Instruction Fetch
-        curr_instr = fib_assembly[curr_addr++];
+        curr_instr = assembly[curr_addr++];
 
         // Info Prep
         switch(curr_instr.opcode) {
@@ -187,5 +203,7 @@ void main() {
     }
 
     printf("***********Done***********\n");
-    printf("Return reg:\n\thex: 0x%X\n\tdec: %d\n", return_reg, return_reg);
+    for (int i = 0; i < MEM_LEN; i++) {
+        printf("Mem[%2d] = 0x%X - %d\n", i, memory[i], memory[i]);
+    }
 }
