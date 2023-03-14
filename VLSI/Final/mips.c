@@ -4,9 +4,24 @@
 #include <stdio.h>
 #include "defs.h"
 
-#define ASSEMBLY_LEN 32
-instruction_t assembly[ASSEMBLY_LEN] = {
+#define ASSEMBLY_LEN 16
+instruction_t fib_assembly[ASSEMBLY_LEN] = {
     {.opcode = NOOP, .dest = NULL_REG, .src1 = NULL_REG, .src2 = NULL_REG },
+    {.opcode = LDNM, .dest = REG_0,    .src1 = NULL_REG, .src2 = 0xF},  // Start a count down counter
+    {.opcode = LDNM, .dest = REG_A,    .src1 = NULL_REG, .src2 = 0x1},  // Load a 1 into a register
+    {.opcode = LDNM, .dest = REG_B,    .src1 = NULL_REG, .src2 = 0x0},  // Load a 0 into a register
+    {.opcode = LDNM, .dest = REG_1,    .src1 = NULL_REG, .src2 = 0x0},  // Load the first two Fibonacci numbers
+    {.opcode = LDNM, .dest = REG_2,    .src1 = NULL_REG, .src2 = 0x1},
+    //Loop Start
+    {.opcode = SUB,  .dest = REG_0,    .src1 = REG_0,    .src2 = REG_A},    // Decrement the counter
+
+    {.opcode = ADD,  .dest = REG_3,    .src1 = REG_1,    .src2 = REG_2},    // Add the two Fib numbers
+    {.opcode = ADD,  .dest = REG_1,    .src1 = REG_2,    .src2 = REG_B},    // Shift the new Fib numbers
+    {.opcode = ADD,  .dest = REG_2,    .src1 = REG_3,    .src2 = REG_B},
+    
+    {.opcode = JMP0, .dest = 0x6,      .src1 = NULL_REG, .src2 = REG_0},    // If the Reg 0 is not 0, jump to the beginning of the loop
+    //Loop End
+    {.opcode = ADD,  .dest = REG_R,    .src1 = REG_B,    .src2 = REG_3},    // Load the Fib value into the return register
 };
 
 #define STACK_LEN 32
@@ -39,14 +54,14 @@ void main() {
     uint32_t registers[NUM_REG] = {};
     int curr_addr = 0;
     instruction_t curr_instr;
-    uint32_t return_reg;
-    uint32_t ALU_1;
-    uint32_t ALU_2;
-    uint32_t ALU_OUT;
+    uint32_t return_reg = 0;
+    uint32_t ALU_1 = 0;
+    uint32_t ALU_2 = 0;
+    uint32_t ALU_OUT = 0;
 
     while (true) {
         // Instruction Fetch
-        curr_instr = assembly[curr_addr++];
+        curr_instr = fib_assembly[curr_addr++];
 
         // Info Prep
         switch(curr_instr.opcode) {
@@ -150,7 +165,12 @@ void main() {
             case SUB:
             case XOR:
             case AND:
-                registers[curr_instr.dest] = ALU_OUT;
+                if (curr_instr.dest == REG_R) { //If setting the return register
+                    return_reg = ALU_OUT;
+                }
+                else {
+                    registers[curr_instr.dest] = ALU_OUT;
+                }
                 break;
 
             default:
@@ -167,4 +187,5 @@ void main() {
     }
 
     printf("***********Done***********\n");
+    printf("Return reg:\n\thex: 0x%X\n\tdec: %d\n", return_reg, return_reg);
 }

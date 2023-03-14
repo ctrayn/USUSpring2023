@@ -2,6 +2,7 @@ SOURCES += $(wildcard *.c)
 OBJECTS := $(SOURCES:.c=.o)
 CC = gcc
 CFLAGS := -I.
+CFLAGS += -Werror
 LDFLAGS := -I.
 EXECUTABLE := mips.elf
 
@@ -15,11 +16,11 @@ $(EXECUTABLE): $(OBJECTS)
 	$(CC) -c $(CFLAGS) $< -o $@
 
 run: $(EXECUTABLE)
+	@mkdir -p $(LOG_DIR)
 	./$(EXECUTABLE) > $(LOG_DIR)/run_log_$(shell date --iso=seconds).log
 
 .PHONY: clean
 clean:
-	rm -rf $(BUILD_DIR)
 	rm -f $(EXECUTABLE)
 	rm -f *.o
 

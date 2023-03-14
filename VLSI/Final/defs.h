@@ -18,40 +18,40 @@ typedef struct instruction_t {
 // OPCODES
 //#########################################
 
-#define NOOP 00000000   // NOOP
-#define LOAD 00000001   // Load from memory 
-#define LDNM 00000010   // Load number
-#define STR  00000011   // Store into memory
-#define ADD  00000100   // Add
-#define SUB  00000101   // Subtract
-#define XOR  00000110   // XOR
-#define AND  00000111   // AND
-#define JMP  00001000   // Jump
-#define JMP0 00001001   // Jump if non 0
-#define PUSH 00001010   // Push to stack
-#define POP  00001011   // Pop from stack
+#define NOOP 0b00000000   // NOOP
+#define LOAD 0b00000001   // Load from memory 
+#define LDNM 0b00000010   // Load number
+#define STR  0b00000011   // Store into memory
+#define ADD  0b00000100   // Add
+#define SUB  0b00000101   // Subtract
+#define XOR  0b00000110   // XOR
+#define AND  0b00000111   // AND
+#define JMP  0b00001000   // Jump
+#define JMP0 0b00001001   // Jump if non 0
+#define PUSH 0b00001010   // Push to stack
+#define POP  0b00001011   // Pop from stack
 
 //#########################################
 // Registers
 //#########################################
 
-#define REG_0 00000000
-#define REG_1 00000001
-#define REG_2 00000010
-#define REG_3 00000011
-#define REG_4 00000100
-#define REG_5 00000101
-#define REG_6 00000110
-#define REG_7 00000111
-#define REG_8 00001000
-#define REG_9 00001001
-#define REG_A 00001010
-#define REG_B 00001011
-#define REG_R 00001100
-#define ADDR  00001101
-#define INSTR 00001110
-#define STACK 00001111
+#define REG_0 0b00000000
+#define REG_1 0b00000001
+#define REG_2 0b00000010
+#define REG_3 0b00000011
+#define REG_4 0b00000100
+#define REG_5 0b00000101
+#define REG_6 0b00000110
+#define REG_7 0b00000111
+#define REG_8 0b00001000
+#define REG_9 0b00001001
+#define REG_A 0b00001010
+#define REG_B 0b00001011
+#define REG_R 0b00001100
+#define ADDR  0b00001101
+#define INSTR 0b00001110
+#define STACK 0b00001111
 
-#define NULL_REG 00000000
+#define NULL_REG 0b00000000
 
 #endif // _DEFS_H_
