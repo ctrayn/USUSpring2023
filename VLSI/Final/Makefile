@@ -1,28 +1,17 @@
-SOURCES += $(wildcard *.c)
-OBJECTS := $(SOURCES:.c=.o)
-CC = gcc
-CFLAGS := -I.
-CFLAGS += -Werror
-LDFLAGS := -I.
-EXECUTABLE := mips.elf
+# Makefile
 
-BUILD_DIR = build
-LOG_DIR = logs
+# defaults
+SIM ?= icarus
+TOPLEVEL_LANG ?= verilog
 
-$(EXECUTABLE): $(OBJECTS)
-	$(CC) -o $@ $^ $(LDFLAGS)
+VERILOG_SOURCES += $(PWD)/mips.v
+# use VHDL_SOURCES for VHDL files
 
-%.o: %.c $(SOURCES)
-	$(CC) -c $(CFLAGS) $< -o $@
+# TOPLEVEL is the name of the toplevel module in your Verilog or VHDL file
+TOPLEVEL = mips
 
-run: $(EXECUTABLE)
-	@mkdir -p $(LOG_DIR)
-	./$(EXECUTABLE) > $(LOG_DIR)/run_log_$(shell date --iso=seconds).log
+# MODULE is the basename of the Python test file
+MODULE = mips_testbench
 
-.PHONY: clean
-clean:
-	rm -f $(EXECUTABLE)
-	rm -f *.o
-
-echo: $(OBJECTS)
-	@echo $(OBJECTS)
+# include cocotb's make rules to take care of the simulator setup
+include $(shell cocotb-config --makefiles)/Makefile.sim

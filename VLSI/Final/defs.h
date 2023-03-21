@@ -7,7 +7,7 @@
 
 #define STACK_LEN 32
 #define NUM_REG 12
-#define MEM_LEN 64
+#define MEM_LEN 32
 #define ASSEMBLY_LEN 32
 
 //#########################################

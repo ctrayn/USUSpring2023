@@ -6,10 +6,10 @@
 
 instruction_t fib_assembly[ASSEMBLY_LEN] = {
     {.opcode = NOOP, .dest = NULL_REG, .src1 = NULL_REG, .src2 = NULL_REG },
-    {.opcode = LOAD, .dest = REG_0,    .src1 = NULL_REG, .src2 = 0x0},  // Read from memory the Fib number to calculate (+1)
-    {.opcode = LDNM, .dest = REG_A,    .src1 = NULL_REG, .src2 = 0x1},  // Load a 1 into a register
-    {.opcode = LDNM, .dest = REG_B,    .src1 = NULL_REG, .src2 = 0x0},  // Load a 0 into a register
-    {.opcode = LDNM, .dest = REG_1,    .src1 = NULL_REG, .src2 = 0x0},  // Load the first two Fibonacci numbers
+    {.opcode = LOAD, .dest = REG_0,    .src1 = NULL_REG, .src2 = 0x0},      // Read from memory the Fib number to calculate (+1)
+    {.opcode = LDNM, .dest = REG_A,    .src1 = NULL_REG, .src2 = 0x1},      // Load a 1 into a register
+    {.opcode = LDNM, .dest = REG_B,    .src1 = NULL_REG, .src2 = 0x0},      // Load a 0 into a register
+    {.opcode = LDNM, .dest = REG_1,    .src1 = NULL_REG, .src2 = 0x0},      // Load the first two Fibonacci numbers
     {.opcode = LDNM, .dest = REG_2,    .src1 = NULL_REG, .src2 = 0x1},
     //Loop Start
     {.opcode = SUB,  .dest = REG_0,    .src1 = REG_0,    .src2 = REG_A},    // Decrement the counter
@@ -24,18 +24,27 @@ instruction_t fib_assembly[ASSEMBLY_LEN] = {
     //FIbonacci end
 
     //Use other opcodes
-    {.opcode = LOAD, .dest = REG_0,    .src1 = NULL_REG, .src2 = 0x2},  //Load the first number
-    {.opcode = LOAD, .dest = REG_1,    .src1 = NULL_REG, .src2 = 0x3},  //Load the second number
-    {.opcode = AND,  .dest = REG_2,    .src1 = REG_1,    .src2 = REG_0}, //And the numbers
-    {.opcode = PUSH, .dest = NULL_REG, .src1 = NULL_REG, .src2 = REG_2}, //Put the And on the stack
-    {.opcode = XOR,  .dest = REG_2,    .src1 = REG_1,    .src2 = REG_0}, //XOR The two numbers
-    {.opcode = PUSH, .dest = NULL_REG, .src1 = NULL_REG, .src2 = REG_2}, //Pusht the XOR value
-    {.opcode = POP,  .dest = REG_0,    .src1 = NULL_REG, .src2 = NULL_REG}, //Get the xor value from the stack
-    {.opcode = STR,  .dest = 0x4,      .src1 = NULL_REG, .src2 = REG_0}, //Put the XOR in the memory
+    {.opcode = LOAD, .dest = REG_0,    .src1 = NULL_REG, .src2 = 0x2},      // Load the first number
+    {.opcode = LOAD, .dest = REG_1,    .src1 = NULL_REG, .src2 = 0x3},      // Load the second number
+    {.opcode = AND,  .dest = REG_2,    .src1 = REG_1,    .src2 = REG_0},    // And the numbers
+    {.opcode = PUSH, .dest = NULL_REG, .src1 = NULL_REG, .src2 = REG_2},    // Put the And on the stack
+    {.opcode = XOR,  .dest = REG_2,    .src1 = REG_1,    .src2 = REG_0},    // XOR The two numbers
+    {.opcode = PUSH, .dest = NULL_REG, .src1 = NULL_REG, .src2 = REG_2},    // Pusht the XOR value
+    {.opcode = POP,  .dest = REG_0,    .src1 = NULL_REG, .src2 = NULL_REG}, // Get the xor value from the stack
+    {.opcode = STR,  .dest = 0x4,      .src1 = NULL_REG, .src2 = REG_0},    // Put the XOR in the memory
     {.opcode = POP,  .dest = REG_0,    .src1 = NULL_REG, .src2 = NULL_REG}, // Get the AND value
-    {.opcode = STR,  .dest = 0x5,      .src1 = NULL_REG, .src2 = REG_0},    //Store the and value in memory
+    {.opcode = STR,  .dest = 0x5,      .src1 = NULL_REG, .src2 = REG_0},    // Store the and value in memory
     {.opcode = JMP,  .dest = 24,       .src1 = NULL_REG, .src2 = NULL_REG}, // JUMP Across the next store
-    {.opcode = STR,  .dest = 0x6,      .src1 = NULL_REG, .src2 = REG_3}, //This should be skipped, if it isn't memory 6 will be the fib number
+    {.opcode = STR,  .dest = 0x6,      .src1 = NULL_REG, .src2 = REG_3},    // This should be skipped, if it isn't memory 6 will be the fib number
+    
+    {.opcode = NOOP, .dest = NULL_REG, .src1 = NULL_REG, .src2 = NULL_REG },
+    {.opcode = NOOP, .dest = NULL_REG, .src1 = NULL_REG, .src2 = NULL_REG },
+    {.opcode = NOOP, .dest = NULL_REG, .src1 = NULL_REG, .src2 = NULL_REG },
+    {.opcode = NOOP, .dest = NULL_REG, .src1 = NULL_REG, .src2 = NULL_REG },
+    {.opcode = NOOP, .dest = NULL_REG, .src1 = NULL_REG, .src2 = NULL_REG },
+    {.opcode = NOOP, .dest = NULL_REG, .src1 = NULL_REG, .src2 = NULL_REG },
+    {.opcode = NOOP, .dest = NULL_REG, .src1 = NULL_REG, .src2 = NULL_REG },
+    {.opcode = JMP,  .dest = 31,       .src1 = NULL_REG, .src2 = NULL_REG },//Dead Loop
 };
 uint32_t fib_memory[MEM_LEN] = {
     0xF,    // Fib number to calculate (+1)
@@ -59,6 +68,22 @@ void print_register_info(uint32_t curr_addr, instruction_t curr_instr, uint32_t 
     printf("Return Reg: 0x%X\n", return_reg);
     for (int i = 0; i < NUM_REG; i++) {
         printf("Reg %2d: 0x%X\n", i, registers[i]);
+    }
+}
+
+void printbin(uint32_t num, int bits) {
+    for (int i = bits - 1; i >= 0; i--) {
+        printf("%d", (num >> i) & 1);
+    }
+}
+
+void print_assembly(instruction_t assembly[]) {
+    for (int i = 0; i < ASSEMBLY_LEN; i++) {
+        printbin(assembly[i].opcode, 8);
+        printbin(assembly[i].dest, 8);
+        printbin(assembly[i].src1, 8);
+        printbin(assembly[i].src2, 8);
+        printf("\n");
     }
 }
 
@@ -197,7 +222,7 @@ void main() {
 
         print_info;
 
-        if (curr_addr >= ASSEMBLY_LEN) {
+        if (curr_addr >= ASSEMBLY_LEN - 1) {
             break;
         }
     }
@@ -206,4 +231,7 @@ void main() {
     for (int i = 0; i < MEM_LEN; i++) {
         printf("Mem[%2d] = 0x%X - %d\n", i, memory[i], memory[i]);
     }
+
+    printf("\n\n");
+    print_assembly(assembly);
 }
