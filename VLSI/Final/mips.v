@@ -1,37 +1,35 @@
-`define NOOP 8'h0
-`define LOAD 8'h1
-`define LDNM 8'h2
-`define STR  8'h3
-`define ADD  8'h4
-`define SUB  8'h5
-`define XOR  8'h6
-`define AND  8'h7
-`define JMP  8'h8
-`define JMP0 8'h9
-`define PUSH 8'hA
-`define POP  8'hB
-
 module mips(input clk);
     reg         [31:0] curr_address;
     reg  [0:12] [31:0] registers;
     reg         [31:0] return_reg;
     assign return_reg = registers[12];
     reg         [31:0] curr_instr;
-    wire        [31:0] ALU_1;
-    wire        [31:0] ALU_2;
-    wire        [31:0] ALU_OUT;
+    reg         [31:0] ALU_1;
+    reg         [31:0] ALU_2;
+    reg         [31:0] ALU_OUT;
     reg  [0:31] [31:0] stack;
     reg         [ 4:0] stack_addr;
     reg  [0:31] [31:0] memory;
     reg  [0:31] [31:0] assembly;
 
-    wire opcode [7:0];
-    wire dest   [7:0];
-    wire src1   [7:0];
-    wire src2   [7:0];
+    reg [7:0] opcode;
+    reg [7:0] dest;
+    reg [7:0] src1;
+    reg [7:0] src2;
     assign {opcode, dest, src1, src2} = curr_instr;
-    // unsigned op_int;
-    // assign op_int = curr_inst[31:24];
+
+    localparam NOOP = 8'h0;
+    localparam LOAD = 8'h1;
+    localparam LDNM = 8'h2;
+    localparam STR  = 8'h3;
+    localparam ADD  = 8'h4;
+    localparam SUB  = 8'h5;
+    localparam XOR  = 8'h6;
+    localparam AND  = 8'h7;
+    localparam JMP  = 8'h8;
+    localparam JMP0 = 8'h9;
+    localparam PUSH = 8'hA;
+    localparam POP  = 8'hB;
 
     initial begin
         assembly[ 0] <= 32'b00000000000000000000000000000000;
@@ -122,33 +120,33 @@ module mips(input clk);
         case (opcode)
             8'b0:
                 ALU_1 = 32'h0;
-            // NOOP, LOAD, LDNM, STR, JMP, JMP0, PUSH, POP: begin
-            //     ALU_1 = 32'h0;
-            //     ALU_2 = 32'h0;
-            // end
+            NOOP, LOAD, LDNM, STR, JMP, JMP0, PUSH, POP: begin
+                ALU_1 = 32'h0;
+                ALU_2 = 32'h0;
+            end
 
-            // ADD, SUB, XOR, AND: begin
-            //     ALU_1 <= registers[src1];
-            //     ALU_2 <= registers[src2];
-            // end
+            ADD, SUB, XOR, AND: begin
+                ALU_1 <= registers[src1];
+                ALU_2 <= registers[src2];
+            end
 
-            // default: begin end
+            default: begin end
         endcase
 
         //ALU
-        case (opcode)
+        case (curr_instr[31:24])
             NOOP, LOAD, LDNM, STR, JMP, JMP0, PUSH, POP: begin
-                ALU_OUT <= 32'h0;
+                ALU_OUT = 32'h0;
             end
 
             ADD:
-                ALU_OUT <= ALU_1 + ALU_2;
+                ALU_OUT = ALU_1 + ALU_2;
 
             SUB:
-                ALU_OUT <= ALU_1 - ALU_2;
+                ALU_OUT = ALU_1 - ALU_2;
 
             XOR:
-                ALU_OUT <= ALU_1 ^ ALU_2;
+                ALU_OUT = ALU_1 ^ ALU_2;
 
             AND:
                 ALU_OUT <= ALU_1 & ALU_2;
