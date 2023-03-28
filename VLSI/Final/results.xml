@@ -1,9 +1,6 @@
 <testsuites name="results">
   <testsuite name="all" package="all">
-    <property name="random_seed" value="1679967424" />
-    <testcase name="test_stupid" classname="mips_testbench" file="/home/calvin/Documents/USUSpring2023/VLSI/Final/mips_testbench.py" lineno="3" time="0.00024247169494628906" sim_time_ns="0.001" ratio_time="4.124192723697148">
-      <failure />
-    </testcase>
-    <testcase name="test_smart" classname="mips_testbench" file="/home/calvin/Documents/USUSpring2023/VLSI/Final/mips_testbench.py" lineno="7" time="9.799003601074219e-05" sim_time_ns="0.001" ratio_time="10.205119221411193" />
+    <property name="random_seed" value="1679971119" />
+    <testcase name="test_run" classname="mips_testbench" file="/home/calvin/Documents/USUSpring2023/VLSI/Final/mips_testbench.py" lineno="22" time="0.021682262420654297" sim_time_ns="1000000.001" ratio_time="46120648.37142689" />
   </testsuite>
 </testsuites>

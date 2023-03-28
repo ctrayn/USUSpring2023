@@ -68,7 +68,8 @@ module mips(input clk);
         memory[ 0] <= 32'hF; // Fib number to calculate (+1)
         memory[ 1] <= 32'h0; // Fib answer
         memory[ 2] <= 32'h3; // Checking other opcodes with store and load
-        memory[ 4] <= 32'hF;
+        memory[ 3] <= 32'hF;
+        memory[ 4] <= 32'h0;
         memory[ 5] <= 32'h0;
         memory[ 6] <= 32'h0;
         memory[ 7] <= 32'h0;
@@ -77,6 +78,7 @@ module mips(input clk);
         memory[10] <= 32'h0;
         memory[11] <= 32'h0;
         memory[12] <= 32'h0;
+        memory[13] <= 32'h0;
         memory[14] <= 32'h0;
         memory[15] <= 32'h0;
         memory[16] <= 32'h0;
@@ -86,6 +88,7 @@ module mips(input clk);
         memory[20] <= 32'h0;
         memory[21] <= 32'h0;
         memory[22] <= 32'h0;
+        memory[23] <= 32'h0;
         memory[24] <= 32'h0;
         memory[25] <= 32'h0;
         memory[26] <= 32'h0;

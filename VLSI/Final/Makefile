@@ -1,7 +1,7 @@
 # Makefile
 
 # defaults
-SIM ?= icarus
+SIM = icarus
 TOPLEVEL_LANG = verilog
 
 VERILOG_SOURCES += $(PWD)/mips.v
