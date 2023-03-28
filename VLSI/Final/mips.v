@@ -165,7 +165,7 @@ module mips(input clk);
                 registers[dest] <= src2;
 
             STR:
-                memroy[dest] <= registers[src2];
+                memory[dest] <= registers[src2];
 
             JMP:
                 curr_address <= dest;
@@ -176,7 +176,7 @@ module mips(input clk);
             end
 
             PUSH: begin
-                stack[stack_addr] <= register[src2];
+                stack[stack_addr] <= registers[src2];
                 stack_addr <= stack_addr + 1;
             end
 

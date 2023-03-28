@@ -2,7 +2,7 @@
 
 # defaults
 SIM ?= icarus
-TOPLEVEL_LANG ?= verilog
+TOPLEVEL_LANG = verilog
 
 VERILOG_SOURCES += $(PWD)/mips.v
 # use VHDL_SOURCES for VHDL files
