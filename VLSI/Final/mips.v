@@ -110,54 +110,62 @@ module mips(input clk);
         registers[9]  <= 32'h0;
         registers[10] <= 32'h0;
         registers[11] <= 32'h0;
+        registers[12] <= 32'h0;
         curr_address  <= 32'h0;
-        stack         <= 32'h0;
+
+        stack[0]      <= 32'h0;
+        stack[1]      <= 32'h0;
+        stack[2]      <= 32'h0;
+        stack[3]      <= 32'h0;
+        stack[4]      <= 32'h0;
+        stack[5]      <= 32'h0;
+        stack[6]      <= 32'h0;
+        stack[7]      <= 32'h0;
+        stack[8]      <= 32'h0;
+        stack[9]      <= 32'h0;
+        stack[10]     <= 32'h0;
+        stack[11]     <= 32'h0;
+        stack[12]     <= 32'h0;
+        stack[13]     <= 32'h0;
+        stack[14]     <= 32'h0;
+        stack[15]     <= 32'h0;
+        stack[16]     <= 32'h0;
+        stack[17]     <= 32'h0;
+        stack[18]     <= 32'h0;
+        stack[19]     <= 32'h0;
+        stack[20]     <= 32'h0;
+        stack[21]     <= 32'h0;
+        stack[22]     <= 32'h0;
+        stack[23]     <= 32'h0;
+        stack[24]     <= 32'h0;
+        stack[25]     <= 32'h0;
+        stack[26]     <= 32'h0;
+        stack[27]     <= 32'h0;
+        stack[28]     <= 32'h0;
+        stack[29]     <= 32'h0;
+        stack[30]     <= 32'h0;
+        stack[31]     <= 32'h0;
         stack_addr    <= 32'h0;
     end
 
     always@(posedge clk) begin
         curr_instr <= assembly[curr_address];
-        curr_address <= curr_address + 1;
 
-        //ALU Prep
+        // Address
         case (opcode)
-            8'b0:
-                ALU_1 = 32'h0;
-            NOOP, LOAD, LDNM, STR, JMP, JMP0, PUSH, POP: begin
-                ALU_1 = 32'h0;
-                ALU_2 = 32'h0;
+            JMP:
+                curr_address <= dest;
+
+            JMP0: begin
+                if (registers[src2] != 0)
+                    curr_address <= dest;
             end
 
-            ADD, SUB, XOR, AND: begin
-                ALU_1 <= registers[src1];
-                ALU_2 <= registers[src2];
-            end
-
-            default: begin end
+            default:
+                curr_address <= curr_address + 1;
+        
         endcase
 
-        //ALU
-        case (curr_instr[31:24])
-            NOOP, LOAD, LDNM, STR, JMP, JMP0, PUSH, POP: begin
-                ALU_OUT = 32'h0;
-            end
-
-            ADD:
-                ALU_OUT = ALU_1 + ALU_2;
-
-            SUB:
-                ALU_OUT = ALU_1 - ALU_2;
-
-            XOR:
-                ALU_OUT = ALU_1 ^ ALU_2;
-
-            AND:
-                ALU_OUT <= ALU_1 & ALU_2;
-
-            default: begin end
-        endcase
-
-        //Memory and Write
         case (opcode)
             NOOP: begin end
 
@@ -170,14 +178,6 @@ module mips(input clk);
             STR:
                 memory[dest] <= registers[src2];
 
-            JMP:
-                curr_address <= dest;
-
-            JMP0: begin
-                if (registers[src2] != 0)
-                    curr_address <= dest;
-            end
-
             PUSH: begin
                 stack[stack_addr] <= registers[src2];
                 stack_addr <= stack_addr + 1;
@@ -188,8 +188,17 @@ module mips(input clk);
                 registers[dest] <= stack[stack_addr];
             end
 
-            ADD, SUB, XOR, AND:
-                    registers[dest] <= ALU_OUT;
+            ADD:
+                registers[dest] <= registers[src1] + registers[src2];
+
+            SUB:
+                registers[dest] <= registers[src1] - registers[src2];
+
+            XOR:
+                registers[dest] <= registers[src1] ^ registers[src2];
+
+            AND:
+                registers[dest] <= registers[src1] & registers[src2];
 
             default: begin end
 

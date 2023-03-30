@@ -33,7 +33,7 @@ instruction_t fib_assembly[ASSEMBLY_LEN] = {
     {.opcode = POP,  .dest = REG_0,    .src1 = NULL_REG, .src2 = NULL_REG}, // Get the xor value from the stack
     {.opcode = STR,  .dest = 0x4,      .src1 = NULL_REG, .src2 = REG_0},    // Put the XOR in the memory
     {.opcode = POP,  .dest = REG_0,    .src1 = NULL_REG, .src2 = NULL_REG}, // Get the AND value
-    {.opcode = STR,  .dest = 0x5,      .src1 = NULL_REG, .src2 = REG_0},    // Store the and value in memory
+    {.opcode = STR,  .dest = 0x5,      .src1 = NULL_REG, .src2 = REG_0},    // Store the AND value in memory
     {.opcode = JMP,  .dest = 24,       .src1 = NULL_REG, .src2 = NULL_REG}, // JUMP Across the next store
     {.opcode = STR,  .dest = 0x6,      .src1 = NULL_REG, .src2 = REG_3},    // This should be skipped, if it isn't memory 6 will be the fib number
     
