@@ -53,8 +53,8 @@ uint32_t fib_memory[MEM_LEN] = {
     0xF,
 };
 
-#define print_info print_register_info(curr_addr, curr_instr, return_reg, ALU_1, ALU_2, ALU_OUT, registers)
-void print_register_info(uint32_t curr_addr, instruction_t curr_instr, uint32_t return_reg, uint32_t ALU_1, uint32_t ALU_2, uint32_t ALU_OUT, uint32_t registers[]) {
+#define print_info print_register_info(curr_addr, curr_instr, return_reg, ALU_1, ALU_2, ALU_OUT, registers, stack)
+void print_register_info(uint32_t curr_addr, instruction_t curr_instr, uint32_t return_reg, uint32_t ALU_1, uint32_t ALU_2, uint32_t ALU_OUT, uint32_t registers[], uint32_t stack[]) {
     printf("*******************************\n");
     printf("Current Address: 0x%X\n", curr_addr);
     printf("Current Instruction:\n");
@@ -67,7 +67,7 @@ void print_register_info(uint32_t curr_addr, instruction_t curr_instr, uint32_t 
     printf("ALU_OUT: 0x%X\n", ALU_OUT);
     printf("Return Reg: 0x%X\n", return_reg);
     for (int i = 0; i < NUM_REG; i++) {
-        printf("Reg %2d: 0x%X\n", i, registers[i]);
+        printf("Reg %2d: 0x%X \tStack[%2d]: 0x%X\n", i, registers[i], i, stack[i]);
     }
 }
 

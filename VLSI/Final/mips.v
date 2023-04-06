@@ -185,7 +185,7 @@ module mips(input clk);
 
             POP: begin
                 stack_addr <= stack_addr - 1;
-                registers[dest] <= stack[stack_addr];
+                registers[dest] <= stack[stack_addr - 1];
             end
 
             ADD:

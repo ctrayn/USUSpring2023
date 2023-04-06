@@ -5,6 +5,20 @@ from cocotb.triggers import FallingEdge, ClockCycles
 REG_LEN = 32
 NUM_REG = 12
 
+def get_stack(dut):
+    stack_str = str(dut.stack.value)
+    stack_depth = int(len(stack_str) / REG_LEN)
+    stack = []
+    for address in range(stack_depth):
+        stack.append([])
+        for index in range(REG_LEN):
+            stack[address].append(stack_str[index + (address * REG_LEN)])
+    
+    int_stack = []
+    for point in stack:
+        int_stack.append(int(''.join(bit for bit in point),2))
+    return int_stack
+
 def get_mem(dut):
     mem_str = str(dut.memory.value)
     memory_depth = int(len(mem_str) / REG_LEN)
@@ -48,8 +62,9 @@ def print_dut_status(dut):
     print(f"\tSRC2:   0x{get_bin_value(dut.src2.value)}")
     print(f"Return Reg: 0x{get_bin_value(dut.return_reg.value)}")
     registers = get_registers(dut)
+    stack = get_stack(dut)
     for index in range(len(registers)):
-        print(f"Reg {index:2}: 0x{registers[index]:X}")
+        print(f"Reg {index:2}: 0x{registers[index]:X} \tStack[{index:2}]: 0x{stack[index]:X}")
 
 @cocotb.test()
 async def test_run(dut):
@@ -61,10 +76,11 @@ async def test_run(dut):
         await ClockCycles(dut.clk, 1)
         print("*******************************")
         print_dut_status(dut)
+    print("***********Done***********")
 
     memory = get_mem(dut)
-    for mem in memory:
-        print(f"{mem:08X}")
+    for index in range(len(memory)):
+        print(f"Mem[{index:2}] = 0x{memory[index]:X} - {memory[index]}")
 
     # Got these from the golden model
     assert memory[0] == 0xF
@@ -73,3 +89,4 @@ async def test_run(dut):
     assert memory[3] == 0xF
     assert memory[4] == 0xC
     assert memory[5] == 0x3
+    assert memory[6] == 0x0
