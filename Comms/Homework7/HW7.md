@@ -1,3 +1,28 @@
+Calvin Passmore
+
+ECE 5660
+
+# Homework 7
+
+# Problem 2
+
+The two filters:
+
+![](./deriv_filter.png)
+
+![](./delayed_filter.png)
+
+The inputs and outputs of the filtering
+
+![](./diff_0.15707963267948966.png)
+
+![](./diff_0.3141592653589793.png)
+
+![](./diff_0.6283185307179586.png)
+
+The code used to differentiate
+
+```python
 from numpy import linspace, pi, sin, cos, convolve
 import matplotlib.pyplot as plt
 
@@ -64,3 +89,5 @@ if __name__ == '__main__':
         min_index = list(deriv).index(min(deriv))
         print(f"Value of delay at minimum deriv {delay[min_index]}")
 
+
+```
