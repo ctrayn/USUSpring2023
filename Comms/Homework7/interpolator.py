@@ -7,6 +7,7 @@ class Interpolator:
         self.interpolated_val = 0
         self.color = 'blue'
         self.name = "None"
+        self.list_of_vals = []
 
     def interpolate(self, mu=None):
         """If no mu is given, mu coefficients will not be updated"""
@@ -26,6 +27,9 @@ class Interpolator:
     def get_result(self):
         return self.interpolated_val
 
+    def store_val(self, val):
+        self.list_of_vals.append(val)
+
 class CubicInterpolator(Interpolator):
     def __init__(self) -> None:
         super().__init__()
@@ -41,7 +45,7 @@ class CubicInterpolator(Interpolator):
         self.name = "Cubic"
 
     def interpolate(self, mu=None):
-        if mu:
+        if mu != None:
             self.calc_mu_coefficients(mu)
         self.interpolated_val = 0
         for index in range(len(self.samples)):
@@ -53,6 +57,7 @@ class CubicInterpolator(Interpolator):
             self.coefficients[i] = 0
             for l in range(len(self.b_coef)):
                 self.coefficients[i] += (mu**self.exponents[l]) * self.b_coef[i][l]
+        self.coefficients = list(reversed(self.coefficients))
 
 class LinearInterpolator(Interpolator):
     def __init__(self) -> None:
@@ -62,13 +67,16 @@ class LinearInterpolator(Interpolator):
         self.name = "Linear"
 
     def calc_mu_coefficients(self, mu):
-        self.coefficients[0] = mu
-        self.coefficients[1] = 1 - mu
+        self.coefficients[0] = 1 - mu
+        self.coefficients[1] = mu
+        print(f"coef[0] = {self.coefficients[0]} coef[1] = {self.coefficients[1]}")
 
     def interpolate(self, mu=None):
-        if mu:
+        if mu != None:
             self.calc_mu_coefficients(mu)
         self.interpolated_val = 0
+        print(f"samples x(mk) = {self.samples[1]}, x(mk+1) = {self.samples[2]}")
+        print(f"mu = {mu}")
         for index in range(len(self.coefficients)):
             self.interpolated_val += self.samples[index + 1] * self.coefficients[index]
         return self.interpolated_val
@@ -80,23 +88,24 @@ if __name__ == '__main__':
     spacing = linspace(0,0.5,1000)
     signal = [sin(2*pi*F0*t) for t in spacing]
 
-    perfect_sample_time = spacing[signal.index(max(signal))]
-    mu = perfect_sample_time - T
+    mus = linspace(0, 1, 13)
+    mu_spacing = [(mu * T) + T for mu in mus]
 
     sample_times = [3*T, 2*T, T, 0]
     interpolators = [CubicInterpolator(), LinearInterpolator()]
     for interpolator in interpolators:
-        interpolator.calc_mu_coefficients(mu)
-
-        for t in sample_times:
-            interpolator.new_sample(sin(2*pi*t))
-        interpolator.interpolate()
+        for mu in mus:
+            for t in sample_times:
+                interpolator.new_sample(sin(2*pi*t))
+            # TODO: This needs to go over 11 points for mu
+            val = interpolator.interpolate(mu)
+            interpolator.store_val(val)
 
     plt.figure()
     plt.plot(spacing, signal)
+    plt.title("Interpolators")
     plt.stem(list(reversed(sample_times)), interpolators[0].samples)
-    plt.plot(perfect_sample_time, 1, marker="o", markersize=10, markerfacecolor="red")
     for interp in interpolators:
-        plt.plot(T + mu, interp.get_result(), marker="o", markersize=7, markerfacecolor=interp.color, markeredgecolor=interp.color)
-    plt.legend(["Signal", "Ideal"] + [interp.name for interp in interpolators])
+        plt.plot(mu_spacing, interp.list_of_vals, markerfacecolor=interp.color, markeredgecolor=interp.color)
+    plt.legend(["Signal"] + [interp.name for interp in interpolators])
     plt.savefig("interpolators.png", format='png')

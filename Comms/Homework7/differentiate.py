@@ -25,11 +25,14 @@ class Differentiator:
     
     def plot_filter(self):
         plt.figure()
+        plt.subplot(2,1,1)
+        plt.title("Derivitive and Delay Filter")
+        plt.ylabel("Derivitive")
         plt.stem(self.indeces, self.deriv_filter)
-        plt.savefig(f"deriv_filter.png", format='png')
-        plt.figure()
+        plt.subplot(2,1,2)
+        plt.ylabel("Delay")
         plt.stem(self.indeces, self.delay_filter)
-        plt.savefig(f"delayed_filter.png", format='png')
+        plt.savefig(f"diff_filters.png", format='png')
 
     def get_result(self):
         return self.deriv, self.delayed
