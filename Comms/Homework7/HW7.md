@@ -4,6 +4,77 @@ ECE 5660
 
 # Homework 7
 
+## Problem 1
+
+### 8.5
+
+```m
+%% Problem 8.5
+
+syms m mu xm xmp1 T
+
+A = [
+    m*T 1;
+    (m-1)*T 1
+    ];
+
+b = [ xm; xmp1 ];
+
+cs = inv(A)*b;
+disp(cs)
+```
+
+gives the output
+
+```
+      xm/T - xmp1/T
+m*xmp1 - xm*(m - 1)
+```
+
+reording and substituting gives
+
+```
+mu *xmp1 + (1-mu)*xm
+```
+
+### 8.6
+
+```m
+%% Problem 8.6
+
+syms m mu xmm1 xm xmp1 xmp2 T c3 c2 c1 c0
+
+A = [
+    ((m-1)*T)^3 ((m-1)*T)^2 ((m-1)*T) 1;
+    (m*T)^3     (m*T)^2     (m*T)     1;
+    ((m+1)*T)^3 ((m+1)*T)^2 ((m+1)*T) 1;
+    ((m+2)*T)^3 ((m+2)*T)^2 ((m+2)*T) 1;
+    ];
+
+b = [xmm1; xm; xmp1; xmp2];
+
+cs = inv(A)*b;
+disp(cs)
+```
+
+gives the output
+
+```
+xm/(2*T^3) - xmm1/(6*T^3) - xmp1/(2*T^3) + xmp2/(6*T^3)
+                            (xmm1*(m + 1))/(2*T^2) - (xm*(3*m + 2))/(2*T^2) + (xmp1*(3*m + 1))/(2*T^2) - (m*xmp2)/(2*T^2)
+(xmp2*(3*m^2 - 1))/(6*T) + (xm*(3*m^2 + 4*m - 1))/(2*T) - (xmm1*(3*m^2 + 6*m + 2))/(6*T) - (xmp1*(3*m^2 + 2*m - 2))/(2*T)
+              xmp2*(- m^3/6 + m/6) + xm*(- m^3/2 - m^2 + m/2 + 1) + xmm1*(m^3/6 + m^2/2 + m/3) + xmp1*(m^3/2 + m^2/2 - m)
+```
+
+re-ordering and simplifying gives
+
+```
++(u(k)^3/6 - u(k)/6) * xmp2
+-(u(k)^3/2 - u(k)^2/2 - u(k))*xmp1
++(u(k)^3/2 - u(k)^2 - u(k)/2 + 1)*xm
+-(u(k)^3/6 - u(k)^2/3 + u(k)/3)xmm1
+```
+
 ## Problem 2
 
 Below are some important values from the filters.
