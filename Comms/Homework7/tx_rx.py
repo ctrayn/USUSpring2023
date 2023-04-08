@@ -77,6 +77,9 @@ class RX:
 
     def get_sampled_signal(self):
         return self.I_delay_normal, self.Q_delay_normal
+
+    def get_sampled_deriv(self):
+        return self.I_deriv_normal, self.Q_deriv_normal
     
     def plot_sampled_signal(self, file_name='rx_sampled.png', format='png'):
         plt.figure()
@@ -97,13 +100,14 @@ class RX:
         return sampled
 
     def normalize_amplitude(self, signal, max_constellation_val):
-        max_sig = max(signal)
+        max_sig = max(max(signal),abs(min(signal)))
         return [i * max_constellation_val / max_sig for i in signal]
 
     def slice_QPSK(self, x, y):
-        a0 = -1 if x < 0 else 1
-        a1 = -1 if y < 0 else 1
-        return a0, a1
+        """Slices a single QPSK point"""
+        a0 = 0 if x < 0 else 1
+        a1 = 0 if y < 0 else 1
+        return [a0, a1]
 
     def matched_filter(self, signal, pulse):
         pulse_reversed = list(reversed(pulse))
