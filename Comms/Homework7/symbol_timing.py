@@ -67,7 +67,7 @@ for index in range(len(rx_I)):
     Qp_int.new_sample(rx_Qp[index])
 
     # Give the ted the last signal and derivitie samples
-    mu = ted.timing_error(I_results[-1], Q_results[-1], Ip_results[-1], Qp_results[-1]) # TODO: double check this
+    mu = ted.timing_error(I_results[-1], Q_results[-1], Ip_results[-1], Qp_results[-1])
     mus.append(mu)
     if ted.strobe:
         I_int.interpolate(mu); Q_int.interpolate(mu); Ip_int.interpolate(mu); Qp_int.interpolate(mu)
