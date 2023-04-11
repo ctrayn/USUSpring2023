@@ -43,27 +43,25 @@ if __name__ == '__main__':
     ###############
     # Problem 2B
     ###############
-    # for a in [0,1]:
-    #     for b in [0,1]:
-    #         for c in [0,1]:
-    #             for d in [0,1]:
-    #                 print(f"\n{a}{b}{c}{d}")
-    #                 LFSR(regs=[a,b,c,d], xor=[1,1,0,0], count = 8).run()
+    states = [[1,1,0,0], [0,0,0,0], [0,0,0,1], [1,0,1,1]]
+    for state in states:
+        print(f"\n{state}")
+        LFSR(regs=state, xor=[1,1,0,0], count = 8).run()
 
     ###############
     # Problem 2C
     ###############
-    lfsr = LFSR()
-    lfsr.run()
-    r_c_tau = []
-    spacing = list(range(-lfsr.count, lfsr.count))
-    for tau in spacing:
-        r_c_tau.append(lfsr.cyclic_autocorrelate(tau))
+    # lfsr = LFSR()
+    # lfsr.run()
+    # r_c_tau = []
+    # spacing = list(range(-lfsr.count, lfsr.count))
+    # for tau in spacing:
+    #     r_c_tau.append(lfsr.cyclic_autocorrelate(tau))
 
-    plt.figure()
-    plt.stem(spacing, r_c_tau)
-    plt.title("r_c(tau)")
-    plt.savefig("r_c_tau.png", format='png')
+    # plt.figure()
+    # plt.stem(spacing, r_c_tau)
+    # plt.title("r_c(tau)")
+    # plt.savefig("r_c_tau.png", format='png')
 
     
 
