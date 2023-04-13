@@ -12,4 +12,4 @@ results = simuation(radius, N0, P, reuse, alpha, target_SINR_db);
 figure();
 plot(target_SINR_db, results);
 xlabel("Target SINR db")
-ylabel("Converge probability")
+ylabel("")
