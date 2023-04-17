@@ -1,53 +1,45 @@
-from math import sqrt, pi, sin, cos, floor
+import numpy as np
+import math
 
-def srrc1(alpha, N, Lp, Ts):
+def srrc1(alpha, N, Lp):
     """
     Return a vector of the srrc function
     alpha = excess bandwidth
     N = samples per symbol
     Lp = SRRC truncation length #Currently only supports even numbers
-    Ts = sample time
     """
 
-    times = []
-    number_of_samples = int(floor(Lp/2)) # and then reflect it on the axis?
-    for idx in range(number_of_samples):
-        t = idx * Ts / N
-        times.append(-t)
-        times.append(t)
-    times.remove(0) # Remove the second zero
-    times.sort()
+    EB = alpha
 
-    answer = []
-    for t in times:
-        answer.append(p_of_nT(Ts, alpha, t))
+    t = np.arange(-Lp*N,Lp*N+1) /N + 1e-8; # +1e-8 to avoid divide by zero
+    tt = t
+    srrc = ((np.sin(math.pi*(1-EB)*tt)+ 4*EB*tt * np.cos(math.pi*(1+EB)*tt))/((math.pi*tt)*(1-(4*EB*tt)**2)))
+    srrc = srrc/math.sqrt(N)
+    return srrc
 
-    while None in answer:
-        index = answer.index(None)
-        value = (answer[index-1] + answer[index+1])/2
-        answer[index] = value
+B = 8; # Bits per symbol (B should be even: 8, 6, 4, 2)
+# B = 4;
+bits2index = 2**np.arange(B-1,-1,-1)
+M = 2 ** B # Number of symbols in the constellation
+Mroot = math.floor(2**(B/2))
+a = np.reshape(np.arange(-Mroot+1,Mroot,2),(2*B,1))
+b = np.ones((Mroot,1))
+LUT = np.hstack((np.kron(a,b), np.kron(b,a)))
+# will be of the form (for example)
+# -3, -3
+# -3, -1
+# -3, 1
+# ...
+# 3, 3
+# of shape (B^2, 2)
+# Scale the constellation to have unit energy
+Enorm = np.sum(LUT ** 2) / M
+LUT = LUT/math.sqrt(Enorm)
 
-    return answer
-
-
-def p_of_nT(Ts, alpha, t):
-    undefined_t_vals = [0, Ts / (4 * alpha)]
-    try:
-    # if t in undefined_t_vals:
-        # return lhopital(Ts, alpha, t)
-    # else:
-        return (1/sqrt(Ts)) * ((sin(pi*(1 - alpha) * t / Ts) + (4 * alpha * t / Ts) * cos(pi * (1 + alpha) * t / Ts))/(((pi*t)/Ts)*(1 - (4 * alpha * t / Ts)**2)))
-    except ZeroDivisionError:
-        return None
-        # return lhopital(Ts, alpha, t)
-
-def lhopital(Ts, alpha, t):
-    numerator = (pi * (1 - alpha) / Ts) * cos(pi * (1 - alpha) * t / Ts) + (4 * alpha / Ts) * (cos(pi * (1 + alpha) * t / Ts) - (pi * (1 + alpha) * t / Ts) * sin(pi * (1 + alpha) * t / Ts))
-    denominator = pi / sqrt(Ts) - (32 * pi * t / (Ts * sqrt(Ts)))
-    return numerator / denominator
-
-def NRZ(Ts):
-    return [Ts]
-
-def MANCH(Ts, Lp=60):
-    return [-Ts, Ts] + [0] * Lp
+def slice_LUT(I, Q):
+    distances = []
+    for index in range(len(LUT)):
+        distances.append(math.sqrt((LUT[index][0] - I)**2 + (LUT[index][1] - Q)**2))
+    min_index = distances.index(min(distances))
+    bits = f"{min_index:08b}"
+    return bits
