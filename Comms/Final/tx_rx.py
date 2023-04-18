@@ -7,7 +7,7 @@ from differentiate import Differentiator
 class RX:
     def __init__(self, signal, sample_time, Lp, pulse, diff_filter_len, diff_T, Omega0) -> None:
         self.differentiator = Differentiator(diff_T, diff_filter_len)
-        self.max_constellation_val = 15
+        self.max_constellation_val = 1.15
         self.Omega0 = Omega0
 
         n = np.arange(len(signal))
