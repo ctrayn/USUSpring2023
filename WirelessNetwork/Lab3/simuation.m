@@ -1,22 +1,16 @@
 %% Simulating with given factors
 
-function results = simuation(radius, N0, P, reuse, alpha, target_SNR_dB)
+function results = simuation(radius, reuse, N0, P, alpha, target_SNR_dB)
     num_stations = 7;
-    base_stations = [
-        [0 0] 
-        [ 1.5*radius  0.5*sqrt(3)*radius]
-        [ 1.5*radius -0.5*sqrt(3)*radius]
-        [-1.5*radius  0.5*sqrt(3)*radius]
-        [-1.5*radius -0.5*sqrt(3)*radius]
-        [0  radius*sqrt(3)]
-        [0 -radius*sqrt(3)]
-    ];
+    base_stations = get_base_stations(radius, reuse);
+    disp(base_stations)
     
-    num_sim = 3000;
+    num_sim = 5000;
     results = zeros(1, length(target_SNR_dB));
     
     for index = 1:length(target_SNR_dB)
-        sum_of_sims = 0;
+        %sum_of_sims = 0;
+        num_above = 0;
         for n = 1:num_sim
             % Randomize the position of the user, and calulate the distances to each BS
             r = rand(1)*radius;
@@ -31,12 +25,18 @@ function results = simuation(radius, N0, P, reuse, alpha, target_SNR_dB)
             h = exprnd(1);
             numerator = h * distances(1)^(-alpha) * P;
             g = exprnd(1);
-            denominator = (g .* distances(2:end).^(-alpha) .* P);
-            SINR = numerator / sum(denominator) + N0;
-            %SINR_db = (10 * log10(SINR)) + N0;
+            denominator = sum(g .* distances(2:end).^(-alpha) .* P) + N0;
+            %disp(denominator)
+            SINR = numerator / denominator;
+            %disp(SINR)
+            SINR_dB = (10 * log10(SINR)); % Convert to dB
 
-            sum_of_sims = sum_of_sims + erf(SINR/target_SNR_dB(index));
+            if SINR_dB >= target_SNR_dB(index)
+                num_above = num_above + 1;
+            end
+
+            %sum_of_sims = sum_of_sims + erf(SINR/target_SNR_dB(index));
         end
-        results(index) = sum_of_sims/num_sim;
+        results(index) = num_above/num_sim;
     end
 end

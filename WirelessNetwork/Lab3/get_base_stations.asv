@@ -1,0 +1,16 @@
+function base_stations = get_base_stations(radius, reuse)
+    base_stations = [
+        [0 0]
+        [0 0]
+        [0 0]
+        [0 0]
+        [0 0]
+        [0 0]
+        [0 0]
+    ];
+    if reuse == 1/3
+        base_station
+    else
+        disp(1)
+    end
+end
