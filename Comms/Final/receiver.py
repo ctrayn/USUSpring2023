@@ -61,8 +61,8 @@ for idx in range(len(bits) - len(unique_word) + 1):
 for i in range(23):
     image[0].pop(0)
 
-for row in image:
-    print(len(row))
+# for row in image:
+#     print(len(row))
 
 # image = np.array([[0] * n_rows for _ in range(n_cols)])
 # for row in range(n_rows):
@@ -80,6 +80,14 @@ image = np.array(image).transpose()
 
 plt.figure()
 plt.imshow(255-image,cmap=plt.get_cmap('Greys'))
+plt.title(f'{input_file} with UW')
 plt.savefig(f'images/{input_file}_image.png', format='png')
+
+uw_remove = image[:-len(unique_word)]
+
+plt.figure()
+plt.imshow(255-uw_remove,cmap=plt.get_cmap('Greys'))
+plt.title(f'{input_file} Removed UW')
+plt.savefig(f'images/{input_file}_image_removeuw.png', format='png')
 
 
