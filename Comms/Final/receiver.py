@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from tx_rx import *
 from pulses import srrc1, slice_LUT
 
-input_file = 'test_2023'
+input_file = 'sim1_2023'
 
 Ts = 1 # Symbol period
 N = 4
@@ -31,6 +31,7 @@ I, Q = rx.get_sampled_signal()
 
 plt.figure()
 plt.scatter(I, Q)
+plt.title(f'{input_file}')
 plt.savefig(F"images/{input_file}_IQ.png", format='png')
 
 ##############################
@@ -57,7 +58,7 @@ for idx in range(len(bits) - len(unique_word) + 1):
             image.append(bits[last_uw : idx + len(unique_word)])
             last_uw = idx + len(unique_word) + 1
 
-# FIXME: Remove the first 23 points
+# FIXME: Remove the first 23 points, should be the row and colum information
 for i in range(23):
     image[0].pop(0)
 
