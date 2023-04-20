@@ -2,11 +2,12 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 from tx_rx import *
-from pulses import srrc1, slice_LUT
+from pulses import srrc1, slice_LUT, slice_LUT_get_symbols
 from ted import TED
+from pll import PLL
 from interpolator import CubicInterpolator
 
-input_file = 'sim4_2023'
+input_file = 'sim3_2023'
 
 Ts = 1 # Symbol period
 N = 4
@@ -24,7 +25,7 @@ with open('data/' + input_file, 'r') as in_file:
 rx = RX(
     signal=input_signal,
     # sample_time=N,
-    sample_time=int(N/4),
+    sample_time=N,
     Lp=Lp,
     pulse=pulse,
     diff_filter_len=diff_filter_len,
@@ -47,9 +48,10 @@ plt.title(f'{input_file}')
 plt.savefig(f"images/{input_file}_IQ_pre_tedandpll.png", format='png')
 
 ##############################
-# Interpolation
+# Tracking
 ##############################
 
+# Interpolation
 start_sample = 94
 num_samples = 4
 K0 = 1
@@ -59,32 +61,49 @@ I_int = CubicInterpolator()
 Q_int = CubicInterpolator()
 Ip_int = CubicInterpolator()
 Qp_int = CubicInterpolator()
-
 I_results = [0]
 Q_results = [0]
-Ip_results = [0]
-Qp_results = [0]
-mus = []
+# Ip_results = [0]
+# Qp_results = [0]
+# mus = []
+
+# PLL
+pll = PLL()
+theta = 0
+K = 1
+xt_prime = []
+yt_prime = []
+theta_hats = []
+delta_thetas = []
 for idx in range(start_sample, len(I)):
     # New samples
-    I_int.new_sample(I[idx])
-    Q_int.new_sample(Q[idx])
-    Ip_int.new_sample(Ip[idx])
-    Qp_int.new_sample(Qp[idx])
+    # I_int.new_sample(I[idx])
+    # Q_int.new_sample(Q[idx])
+    # Ip_int.new_sample(Ip[idx])
+    # Qp_int.new_sample(Qp[idx])
 
-    mu = ted.timing_error(I_results[-1], Q_results[-1], Ip_results[-1], Qp_results[-1])
-    mus.append(mu)
-    if ted.strobe:
-        I_int.interpolate(mu); Q_int.interpolate(mu); Ip_int.interpolate(mu); Qp_int.interpolate(mu)
-        I_int.plot(f"I_int{idx-num_samples+1}-{idx}")
-        I_results.append(I_int.get_result())
-        Q_results.append(Q_int.get_result())
-        Ip_results.append(Ip_int.get_result())
-        Qp_results.append(Qp_int.get_result())
-I_results.pop(0)
-Q_results.pop(0)
-Ip_results.pop(0)
-Qp_results.pop(0)
+    # mu = ted.timing_error(I_results[-1], Q_results[-1], Ip_results[-1], Qp_results[-1])
+    # mus.append(mu)
+    # if ted.strobe:
+    #     I_int.interpolate(mu); Q_int.interpolate(mu); Ip_int.interpolate(mu); Qp_int.interpolate(mu)
+    #     # I_int.plot(f"I_int{idx-num_samples+1}-{idx}")
+    #     I_results.append(I_int.get_result())
+    #     Q_results.append(Q_int.get_result())
+    #     Ip_results.append(Ip_int.get_result())
+    #     Qp_results.append(Qp_int.get_result())
+
+    a0, a1 = slice_LUT_get_symbols(I[idx], Q[idx])
+    theta_hat = pll.pll(I[idx], Q[idx], a0, a1)
+    theta_hats.append(theta_hat)
+    # delta_thetas.append(theta_hat)
+    I_results.append(K * ((a0 * np.cos(theta_hat)) - (a1 * np.sin(theta_hat))))
+    Q_results.append(K * ((a0 * np.sin(theta_hat)) + (a1 * np.cos(theta_hat))))
+
+
+# I_results.pop(0)
+# Q_results.pop(0)
+# Ip_results.pop(0)
+# Qp_results.pop(0)
 
 bits = []
 for I, Q in zip(I_results, Q_results):
@@ -92,16 +111,29 @@ for I, Q in zip(I_results, Q_results):
 
 print(f"Length of bits {len(bits)}")
 
+# Interpolation output figures
+# plt.figure()
+# plt.plot(mus)
+# plt.title("Mu(k)")
+# plt.savefig(f"images/mus_{input_file}.png", format='png')
+
+# plt.figure()
+# plt.plot(ted.es)
+# plt.title("Filter Error")
+# plt.savefig(f"images/e_{input_file}.png", format='png')
+
+# PLL output figures
 plt.figure()
-plt.plot(mus)
-plt.title("Mu(k)")
-plt.savefig(f"images/mus_{input_file}.png", format='png')
+plt.plot(pll.error_signal)
+plt.title("PLL Error Signal")
+plt.savefig(f'images/pll_error_{input_file}.png', format='png')
 
 plt.figure()
-plt.plot(ted.es)
-plt.title("Filter Error")
-plt.savefig(f"images/e_{input_file}.png", format='png')
+plt.plot(theta_hats)
+plt.title("Theta Hat")
+plt.savefig(f'images/pll_theta_hat_{input_file}.png', format='png')
 
+# General output figures
 plt.figure()
 plt.scatter(I_results, Q_results)
 plt.title("Recovered IQ")

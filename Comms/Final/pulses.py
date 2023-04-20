@@ -45,3 +45,9 @@ def slice_LUT(I, Q):
         distances.append(math.sqrt((LUT[index][0] - I)**2 + (LUT[index][1] - Q)**2))
     min_index = distances.index(min(distances))
     return min_index
+
+def slice_LUT_get_symbols(I, Q):
+    value = slice_LUT(I, Q)
+    a1 = value & 0xFFFF
+    a0 = (value >> 32) & 0xFFFF
+    return LUT[a0][1], LUT[a1][1]

@@ -1,4 +1,4 @@
-data = [[0,0,0], [0,0,0], [1,2,3]]
+from pulses import *
 
-if [1,2,3] in data:
-    print("found")
+for idx in range(16):
+    print(LUT[idx][1])
