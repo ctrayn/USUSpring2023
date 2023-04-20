@@ -31,10 +31,11 @@ class Interpolator:
     def store_val(self, val):
         self.list_of_vals.append(val)
 
-    def plot(self,file_name, format='png'):
+    def plot(self, file_name, format='png'):
         plt.figure()
+        plt.title(file_name.split('.')[0])
         plt.stem(list(reversed(self.samples)))
-        plt.scatter(7 + self.mu, self.interpolated_val)
+        plt.scatter(1 + self.mu, self.interpolated_val, edgecolors='red')
         plt.show()
 
 class CubicInterpolator(Interpolator):

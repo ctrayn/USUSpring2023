@@ -34,8 +34,8 @@ class RX:
         self.I_delay_normal = self.normalize_amplitude(self.I_delay_sample, self.max_constellation_val)
         self.Q_delay_normal = self.normalize_amplitude(self.Q_delay_sample, self.max_constellation_val)
 
-        self.I_deriv_sample = self.sample_signal(self.I_deriv, sample_time, Lp)
-        self.Q_deriv_sample = self.sample_signal(self.Q_deriv, sample_time, Lp)
+        self.I_deriv_sample = self.sample_signal(self.I_deriv, delay_time, sample_time, Lp)
+        self.Q_deriv_sample = self.sample_signal(self.Q_deriv, delay_time, sample_time, Lp)
         self.I_deriv_normal = self.normalize_amplitude(self.I_deriv_sample, self.max_constellation_val)
         self.Q_deriv_normal = self.normalize_amplitude(self.Q_deriv_sample, self.max_constellation_val)
 

@@ -3,8 +3,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tx_rx import *
 from pulses import srrc1, slice_LUT
+from ted import TED
+from interpolator import CubicInterpolator
 
-input_file = 'sim1_2023'
+input_file = 'sim4_2023'
 
 Ts = 1 # Symbol period
 N = 4
@@ -21,29 +23,99 @@ with open('data/' + input_file, 'r') as in_file:
 
 rx = RX(
     signal=input_signal,
-    sample_time=N,
+    # sample_time=N,
+    sample_time=int(N/4),
     Lp=Lp,
     pulse=pulse,
     diff_filter_len=diff_filter_len,
     diff_T=diff_T,
     Omega0=Omega0)
 I, Q = rx.get_sampled_signal()
+Ip, Qp = rx.get_sampled_deriv()
+
+plt.figure()
+plt.stem(I)
+# plt.xlim([0, 500])
+plt.title("I")
+plt.savefig(f'images/{input_file}_I.png', format='png')
+
+assert len(I) == len(Q) == len(Ip) == len(Qp), f"RX Signal and Derivitive are not the same length {len(I)} {len(Q)} {len(Ip)} {len(Qp)}"
 
 plt.figure()
 plt.scatter(I, Q)
 plt.title(f'{input_file}')
-plt.savefig(F"images/{input_file}_IQ.png", format='png')
+plt.savefig(f"images/{input_file}_IQ_pre_tedandpll.png", format='png')
+
+##############################
+# Interpolation
+##############################
+
+start_sample = 94
+num_samples = 4
+K0 = 1
+Kp = 0.23
+ted = TED(K0=K0, KP=Kp, num_samples=num_samples)
+I_int = CubicInterpolator()
+Q_int = CubicInterpolator()
+Ip_int = CubicInterpolator()
+Qp_int = CubicInterpolator()
+
+I_results = [0]
+Q_results = [0]
+Ip_results = [0]
+Qp_results = [0]
+mus = []
+for idx in range(start_sample, len(I)):
+    # New samples
+    I_int.new_sample(I[idx])
+    Q_int.new_sample(Q[idx])
+    Ip_int.new_sample(Ip[idx])
+    Qp_int.new_sample(Qp[idx])
+
+    mu = ted.timing_error(I_results[-1], Q_results[-1], Ip_results[-1], Qp_results[-1])
+    mus.append(mu)
+    if ted.strobe:
+        I_int.interpolate(mu); Q_int.interpolate(mu); Ip_int.interpolate(mu); Qp_int.interpolate(mu)
+        I_int.plot(f"I_int{idx-num_samples+1}-{idx}")
+        I_results.append(I_int.get_result())
+        Q_results.append(Q_int.get_result())
+        Ip_results.append(Ip_int.get_result())
+        Qp_results.append(Qp_int.get_result())
+I_results.pop(0)
+Q_results.pop(0)
+Ip_results.pop(0)
+Qp_results.pop(0)
+
+bits = []
+for I, Q in zip(I_results, Q_results):
+    bits.append(slice_LUT(I, Q))
+
+print(f"Length of bits {len(bits)}")
+
+plt.figure()
+plt.plot(mus)
+plt.title("Mu(k)")
+plt.savefig(f"images/mus_{input_file}.png", format='png')
+
+plt.figure()
+plt.plot(ted.es)
+plt.title("Filter Error")
+plt.savefig(f"images/e_{input_file}.png", format='png')
+
+plt.figure()
+plt.scatter(I_results, Q_results)
+plt.title("Recovered IQ")
+plt.savefig(f"images/recovered_IQ_{input_file}.png", format='png')
 
 ##############################
 # Bits to Image
 ##############################
 
-n_rows = slice_LUT(I.pop(0), Q.pop(0))
-n_cols = slice_LUT(I.pop(0), Q.pop(0))
-
-bits = []
-for bit in range(len(I)):
-    bits.append(slice_LUT(I.pop(0), Q.pop(0)))
+n_rows = bits.pop(0)
+n_cols = bits.pop(0)
+# FIXME: Remove the first 23 points, should be the row and colum information
+for _ in range(23):
+    bits.pop(0)
 
 print(f'Rows {n_rows}')
 print(f'Cols {n_cols}')
@@ -57,10 +129,6 @@ for idx in range(len(bits) - len(unique_word) + 1):
         if bits[idx : idx + len(unique_word)] == unique_word:
             image.append(bits[last_uw : idx + len(unique_word)])
             last_uw = idx + len(unique_word) + 1
-
-# FIXME: Remove the first 23 points, should be the row and colum information
-for i in range(23):
-    image[0].pop(0)
 
 # for row in image:
 #     print(len(row))
@@ -78,6 +146,10 @@ with open(f'data/{input_file}_output.txt', 'w') as outfile:
         outfile.write(str(row) + '\n')
 # image = np.reshape(np.array(data), [n_cols, n_rows])
 image = np.array(image).transpose()
+
+if len(image) < 3: # Arbitrary number for error checking, should have more than this many sights of the UW
+    print(f"Didn't find enough UWs")
+    exit(1)
 
 plt.figure()
 plt.imshow(255-image,cmap=plt.get_cmap('Greys'))
