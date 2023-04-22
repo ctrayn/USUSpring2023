@@ -4,8 +4,8 @@ class PLL:
     def __init__(self) -> None:
         self.BnT = 0.5
         self.Z = 1 / sqrt(2)
-        self.Kp = 7
-        self.K0 = 1
+        self.Kp = 1
+        self.K0 = 5.66
         self.compute_K1_K2(self.BnT, self.Z, self.K0, self.Kp)
         self.Omega_n = 1e9
         self.A = 1

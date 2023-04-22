@@ -34,7 +34,44 @@ Recovered Constellation
 
 ---
 
-## Table of Parameters
+I didn't get any other images to generate, here are my plots of the I's and Q's I got followed by the code
 
-Problem | K0 | Kp | K1 | K2 | BnT | Zeta | N 
-:------:|:--:|:--:|:--:|:--:|:---:|:----:|:--:
+### Sim2
+
+![](./images/sim2_2023_IQ_pre_tedandpll.png)
+
+![](./images/recovered_IQ_sim2_2023.png)
+
+![](./images/pll_error_sim2_2023.png)
+
+![](./images/pll_theta_hat_sim2_2023.png)
+
+### Sim3
+
+![](./images/sim3_2023_IQ_pre_tedandpll.png)
+
+![](./images/recovered_IQ_sim3_2023.png)
+
+![](./images/pll_error_sim3_2023.png)
+
+![](./images/pll_theta_hat_sim3_2023.png)
+
+### Sim4
+
+![](./images/sim4_2023_IQ_pre_tedandpll.png)
+
+![](./images/recovered_IQ_sim4_2023.png)
+
+![](./images/mus_sim4_2023.png)
+
+![](./images/e_sim4_2023.png)
+
+### Sim5
+
+![](./images/sim5_2023_IQ_pre_tedandpll.png)
+
+![](./images/recovered_IQ_sim5_2023.png)
+
+![](./images/mus_sim5_2023.png)
+
+![](./images/e_sim5_2023.png)
